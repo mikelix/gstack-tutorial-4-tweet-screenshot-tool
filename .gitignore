@@ -57,3 +57,7 @@ __pycache__/
 # docs/TUTORIAL_4_DECK_MANIFEST.md "Build notes")
 ~$*.pptx
 ~$*.docx
+
+# Optional local privacy-scan denylist (specific values a contributor wants
+# to additionally check for). Never committed -- see _build/privacy_patterns.py.
+.privacy-denylist.local

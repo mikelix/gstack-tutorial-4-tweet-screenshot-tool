@@ -4,8 +4,9 @@
 Mirrors verify_deck.py's discipline for the pptx deck: a clean source
 document doesn't guarantee a clean built artifact. Opens the actual
 gstack-tutorial-4_{EN,ZH}.docx files via python-docx and scans every
-paragraph and table-cell run for the same forbidden identifiers the source
-privacy review flagged (docs/TUTORIAL_4_PRIVACY_REVIEW.md).
+paragraph and table-cell run using the generic, public-safe patterns in
+privacy_patterns.py (never a hardcoded real identifier -- see that module's
+docstring for why).
 
 Exit 0 if clean, 1 if any forbidden identifier is found.
 """
@@ -14,18 +15,11 @@ from pathlib import Path
 
 from docx import Document
 
+sys.path.insert(0, str(Path(__file__).parent))
+from privacy_patterns import scan_text
+
 ROOT = Path(__file__).resolve().parents[1]
 DIST = ROOT / "dist"
-
-FORBIDDEN = [
-    "meyklee",
-    "MEE2159",
-    "hkustmech",
-    "RTXG-KKGR",
-    "oauth/device",
-    "user_code",
-    r"C:\Users",
-]
 
 failures = []
 
@@ -48,13 +42,12 @@ def scan(path: Path):
         return
     doc = Document(str(path))
     full_text = "\n".join(all_text(doc))
-    hit_any = False
-    for pattern in FORBIDDEN:
-        if pattern.lower() in full_text.lower():
-            print(f"  FAIL  forbidden identifier present: {pattern!r}")
-            failures.append(f"{path.name}: {pattern}")
-            hit_any = True
-    if not hit_any:
+    hits = scan_text(full_text)
+    if hits:
+        for label, snippet in hits:
+            print(f"  FAIL  {label} matched: {snippet!r}")
+            failures.append(f"{path.name}: {label}")
+    else:
         print(f"  OK    zero forbidden identifiers ({len(full_text)} chars scanned)")
 
     section_count = sum(1 for p in doc.paragraphs if p.text and
