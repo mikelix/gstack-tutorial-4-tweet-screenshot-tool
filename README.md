@@ -126,3 +126,7 @@ and `docs/TUTORIAL_4_DOCUMENT_PRIVACY_CHECK.md` for exactly what was
 reviewed, what was excluded, and why. The redacted, publication-safe session
 transcript (`docs/SESSION_TRANSCRIPT_20260917_PUBLIC.md`) is included in its
 place.
+
+## License
+
+MIT — see [`LICENSE`](LICENSE).
