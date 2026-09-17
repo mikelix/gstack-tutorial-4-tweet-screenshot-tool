@@ -1,0 +1,7 @@
+# Pin line endings for cross-platform script correctness.
+# CRLF sneaking into a shell/python script breaks it with a cryptic
+# "command not found" (P4 in gstack-tutorial-3's PLAYBOOK.md pitfall ledger).
+*.sh text eol=lf
+*.py text eol=lf
+*.ps1 text eol=crlf
+*.bat text eol=crlf
