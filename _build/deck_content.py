@@ -608,4 +608,115 @@ SLIDES = [
         "source": T("reviews/04-qa-report.md; reviews/05-ship.md; docs/external_ai_mentor.md",
                     "reviews/04-qa-report.md；reviews/05-ship.md；docs/external_ai_mentor.md"),
     }),
+
+    # 21 -------------------------------------------------------------- table
+    ("table", {
+        "kicker": T("tutorial 4.1 — product design review", "教程 4.1 —— 产品设计复核"),
+        "title": T(
+            "A working product that still read as an engineering prototype",
+            "一个能用、却依然读起来像工程原型的产品"
+        ),
+        "lead": T(
+            "Shipped and functionally correct is a different claim from "
+            "trustworthy at first glance.",
+            "已上线且功能正确，和第一眼就值得信任，是两个不同的结论。",
+        ),
+        "headers": T(["Gap found", "Fix shipped"], ["发现的差距", "上线的修复"]),
+        "rows": T(
+            [
+                ["No header or navigation", "Persistent header; Single Tweet / Thread now cross-linked"],
+                ["Plain, unstyled input", "Styled control, two-column preview + inspector layout"],
+                ["Three export buttons, equal weight", "One primary action, two visibly secondary"],
+                ["375px horizontal overflow (confirmed bug)", "Fixed; re-verified mechanically"],
+            ],
+            [
+                ["没有头部或导航", "持久化头部；Single Tweet / Thread 现已互相链接"],
+                ["朴素、无样式的输入框", "已样式化的控件，预览+检查面板两栏布局"],
+                ["三个导出按钮，权重相同", "一个主要操作，两个明显次要的操作"],
+                ["375px 下的水平溢出（已确认的 bug）", "已修复；已机械化重新验证"],
+            ],
+        ),
+        "widths": [5.5, 6.3],
+        "source": T("docs/DESIGN_REVIEW_4_1_HUMAN_REVIEW.md; docs/DESIGN_REVIEW_4_1_RELEASE.md",
+                    "docs/DESIGN_REVIEW_4_1_HUMAN_REVIEW.md；docs/DESIGN_REVIEW_4_1_RELEASE.md"),
+    }),
+
+    # 22 -------------------------------------------------------------- table
+    ("table", {
+        "kicker": T("tutorial 4.1 — the X Broadcast boundary", "教程 4.1 —— X Broadcast 的边界"),
+        "title": T(
+            "Before fixing a missing output, find the layer where it disappears",
+            "在修复一个缺失的输出之前，先找到它消失的那一层"
+        ),
+        "lead": T(
+            "X's free syndication data never includes broadcast card "
+            "metadata — confirmed by reading the raw payload, not guessed.",
+            "X 的免费 syndication 数据从未包含 broadcast 卡片元数据"
+            "——这是通过直接读取原始数据确认的，不是猜测。",
+        ),
+        "headers": T(["Layer", "Result"], ["层", "结果"]),
+        "rows": T(
+            [
+                ["X.com original page", "Rich animated Broadcast card — visible"],
+                ["Free syndication payload", "URL entity only — no card, poster, or title"],
+                ["react-tweet library", "No card/broadcast concept anywhere in source"],
+                ["This app + export", "Text + link — matches upstream data exactly"],
+            ],
+            [
+                ["X.com 原始页面", "丰富的动态 Broadcast 卡片——可见"],
+                ["免费 syndication 数据", "仅有 URL 实体——没有卡片、封面图或标题"],
+                ["react-tweet 库", "源码任何地方都没有卡片/broadcast 概念"],
+                ["本应用 + 导出", "文本+链接——与上游数据完全一致"],
+            ],
+        ),
+        "widths": [4.5, 7.3],
+        "source": T("TODOS.md; docs/DESIGN_REVIEW_4_1_RELEASE.md — classified as known upstream limitation, not a bug",
+                    "TODOS.md；docs/DESIGN_REVIEW_4_1_RELEASE.md ——归类为已知上游限制，非 bug"),
+    }),
+
+    # 23 -------------------------------------------------------------- quote
+    ("quote", {
+        "kicker": T("tutorial 4.1 — the wrong hypothesis, killed fast", "教程 4.1 —— 被快速杀死的错误假设"),
+        "quote": T(
+            "1x, 2x, and 3x all failed at the identical ~8.2-second mark.\n"
+            "A real size problem fails later at 1x than at 3x.\n"
+            "Identical timing didn't weakly suggest — it disproved the hypothesis.",
+            "1x、2x、3x 全部在相同的约 8.2 秒时刻失败。\n"
+            "一个真实的体积问题，会在 1x 时更晚失败、3x 时更早失败。\n"
+            "完全相同的耗时不是弱证据——它直接证伪了这个假设。",
+        ),
+        "attrib": T(
+            "Real cause: modern-screenshot awaits a `seeked` event a never-played "
+            "video will never fire. Fix: swap <video> for its poster on an "
+            "off-screen clone, before the library ever sees it. src/lib/export-image.ts",
+            "真正的原因：modern-screenshot 在等待一个从未播放过的视频永远不会"
+            "触发的 `seeked` 事件。修复：在库看到它之前，先在一份屏幕外的克隆"
+            "上把 <video> 换成它的封面图。src/lib/export-image.ts",
+        ),
+    }),
+
+    # 24 ------------------------------------------------------------ bullets
+    ("bullets", {
+        "kicker": T("tutorial 4.1 — the human evidence ladder, extended", "教程 4.1 —— 延伸后的人工证据阶梯"),
+        "title": T(
+            "“The promise resolved” and “a human pasted it and looked” are different claims",
+            "“承诺 resolve 了”和“一个人粘贴之后亲眼看过”是两个不同的结论"
+        ),
+        "bullets": T(
+            [
+                ("Printed before export.", "A PDF of the thread page, captured before the export attempt, proved the DOM had rendered correctly — independent of what export did next."),
+                ("Production, not just local.", "Download PNG and Copy image were both re-run against the live deployed URL after the fix, not only on localhost."),
+                ("Cross-application, by hand.", "The copied image was pasted into Windows 11 Paint and visually confirmed — closing a clipboard claim left unverified since the original tutorial."),
+                ("Still no AI substitute.", "No automated check in this project's history could have formulated either of Tutorial 4.1's two bugs — a human found both."),
+            ],
+            [
+                ("导出之前先打印出来。", "一份在尝试导出之前就打印出来的 thread 页面 PDF，证明了 DOM 渲染正确——独立于导出接下来做了什么。"),
+                ("不只是本地，是生产环境。", "修复之后，Download PNG 和 Copy image 都针对线上已部署的 URL 重新跑了一遍，不只是本地环境。"),
+                ("跨应用、亲手确认。", "复制出来的图片被粘贴进 Windows 11 画图并经过肉眼确认——闭合了一个自最初那份教程以来就一直未经验证的剪贴板声明。"),
+                ("依然没有 AI 可以替代。", "本项目历史上没有任何自动化检查能够表述出教程 4.1 里的这两个 bug 中的任何一个——两个都是被人工发现的。"),
+            ],
+        ),
+        "source": T("docs/DESIGN_REVIEW_4_1_RELEASE.md — human manual verification",
+                    "docs/DESIGN_REVIEW_4_1_RELEASE.md ——人工手动验证"),
+    }),
 ]

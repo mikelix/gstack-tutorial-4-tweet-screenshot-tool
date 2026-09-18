@@ -122,6 +122,7 @@ DOC = {
         L("Reusable Workflow", "可复用工作流"),
         L("Key Lessons", "关键教训"),
         L("Metrics and Evidence Summary", "指标与证据总结"),
+        L("Tutorial 4.1: Post-Launch Iteration", "教程 4.1：上线之后的迭代"),
         L("Definition of Done and Release Status", "完成定义与发布状态"),
     ],
     "sections": [
@@ -442,6 +443,93 @@ DOC = {
                     "完整数据集见封面页的\"概览数据\"表。每一项数字都可"
                     "追溯到本仓库中的具体复核文件——完整的溯源表见 "
                     "docs/TUTORIAL_4_DOCUMENT_MANIFEST.md。",
+                )),
+            ],
+        },
+        {
+            "title": L("Tutorial 4.1: Post-Launch Iteration", "教程 4.1：上线之后的迭代"),
+            "blocks": [
+                ("p", L(
+                    "A second, later session on the same codebase, run "
+                    "after the app above was already live. Full narrative: "
+                    "TUTORIAL.md / TUTORIAL.zh.md Parts 20-23. Four "
+                    "findings carried the strongest lessons.",
+                    "同一个代码库上第二次、更晚的会话，在上文的应用已经"
+                    "上线之后进行。完整叙述见 TUTORIAL.md / TUTORIAL.zh.md "
+                    "第 20-23 部分。四项发现携带了最有分量的教训。",
+                )),
+                ("h2", L("A shipped product judged unfinished", "一个被判定为未完成的已上线产品")),
+                ("p", L(
+                    "The app was functionally correct and already in "
+                    "production, yet a human design review found it read "
+                    "as an engineering prototype: no navigation between its "
+                    "two modes, unstyled controls, three export buttons of "
+                    "identical visual weight. A redesign (\"Quiet Creator "
+                    "Tool\") shipped after a human-approved gate -- with "
+                    "export architecture reconfirmed byte-identical before "
+                    "and after.",
+                    "该应用在功能上是正确的，并且已经在生产环境中运行，"
+                    "但一次人工设计复核认为它读起来像一个工程原型：两种"
+                    "模式之间没有导航、控件没有样式、三个导出按钮视觉权重"
+                    "完全相同。一次重新设计（\"安静的创作工具\"）在人工"
+                    "批准的关卡之后上线——导出架构在修改前后被重新确认为"
+                    "逐字节相同。",
+                )),
+                ("h2", L("A missing card, traced to its real layer", "一张缺失的卡片，被追溯到它真正所在的那一层")),
+                ("p", L(
+                    "A quoted X Broadcast rendered as text and a bare link "
+                    "instead of X.com's rich card. Tracing the pipeline "
+                    "layer by layer found the free syndication data itself "
+                    "never includes broadcast card metadata -- confirmed "
+                    "against X's own oEmbed endpoint. Classified as a known "
+                    "upstream limitation, not a bug; a native-video control "
+                    "case confirmed ordinary media was unaffected.",
+                    "一条被引用的 X Broadcast 渲染成了纯文本和一个裸链接，"
+                    "而不是 X.com 的富卡片。逐层追溯这条流水线，发现免费"
+                    "的 syndication 数据本身就从未包含 broadcast 卡片元"
+                    "数据——这一点已对照 X 自己的 oEmbed 端点得到确认。"
+                    "被归类为已知的上游限制，而不是 bug；一个原生视频"
+                    "对照案例确认普通媒体不受影响。",
+                )),
+                ("h2", L("The wrong hypothesis, killed fast", "被快速杀死的错误假设")),
+                ("p", L(
+                    "A media-heavy thread's export timed out. The obvious "
+                    "hypothesis -- too large for the requested scale -- was "
+                    "disproven in one step: 1x, 2x, and 3x all failed at "
+                    "the identical ~8.2-second mark. The real cause lived "
+                    "in a third-party library's video-cloning code: it "
+                    "waits for a browser event that a never-played video "
+                    "will never fire, hanging forever.",
+                    "一个媒体密集型 thread 的导出超时了。显而易见的假设——"
+                    "对所请求的倍率来说体积太大——被一步证伪：1x、2x、3x "
+                    "全部在相同的约 8.2 秒时刻失败。真正的原因藏在第三方"
+                    "库的视频克隆代码里：它在等待一个从未播放过的视频"
+                    "永远不会触发的浏览器事件，从而永远挂起。",
+                )),
+                ("code", [
+                    "Scale  Result  Time to failure",
+                    "1x     FAIL    ~8.2s",
+                    "2x     FAIL    ~8.2s",
+                    "3x     FAIL    ~8.2s   <- identical, not size-scaled",
+                ]),
+                ("callout", L(
+                    "Identical failure time at every scale disproved the "
+                    "size hypothesis in one experiment -- no timeout was "
+                    "ever raised as the fix.",
+                    "每个倍率下完全相同的失败耗时，用一次实验就证伪了"
+                    "体积假设——超时时间从未被当作修复方案调大过。",
+                )),
+                ("h2", L("A promise resolving is not a human looking", "一个 promise resolve 了，不等于一个人亲眼看过")),
+                ("p", L(
+                    "The fixed export's clipboard-copy path had sat "
+                    "unverified since the original release. A human closed "
+                    "that gap the only way it actually closes: copying the "
+                    "image on the live production app, pasting it into "
+                    "Windows 11 Paint, and looking at the result.",
+                    "修复后导出的剪贴板复制路径，自最初发布以来就一直"
+                    "未经验证。一位人工用唯一真正能闭合这个缺口的方式"
+                    "闭合了它：在线上生产应用中复制图片，粘贴进 Windows "
+                    "11 画图，然后亲眼看结果。",
                 )),
             ],
         },

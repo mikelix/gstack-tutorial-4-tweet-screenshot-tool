@@ -17,9 +17,14 @@ from pptx import Presentation
 
 sys.path.insert(0, str(Path(__file__).parent))
 from privacy_patterns import scan_text
+from deck_content import SLIDES
 
 ROOT = Path(__file__).resolve().parents[1]
 DIST = ROOT / "dist"
+# Derived from the source module, not hardcoded -- a slide count added to
+# deck_content.py is automatically the new expected count, so this check
+# can never silently go stale the way a literal number would.
+EXPECTED_SLIDES = len(SLIDES)
 
 errors = []
 
@@ -42,8 +47,8 @@ for lang in ("EN", "ZH"):
     for label, snippet in scan_text(joined):
         errors.append(f"{lang}: {label} matched: ...{snippet}...")
 
-    if len(prs.slides) != 20:
-        errors.append(f"{lang}: expected 20 slides, got {len(prs.slides)}")
+    if len(prs.slides) != EXPECTED_SLIDES:
+        errors.append(f"{lang}: expected {EXPECTED_SLIDES} slides, got {len(prs.slides)}")
 
 print()
 if errors:
@@ -51,4 +56,4 @@ if errors:
     for e in errors:
         print(f"  - {e}")
     sys.exit(1)
-print("PASS -- both decks 20/20 slides, zero forbidden identifiers in rendered text.")
+print(f"PASS -- both decks {EXPECTED_SLIDES}/{EXPECTED_SLIDES} slides, zero forbidden identifiers in rendered text.")
