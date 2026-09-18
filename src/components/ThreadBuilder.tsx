@@ -136,35 +136,38 @@ export const ThreadBuilder = forwardRef<ThreadBuilderHandle, ThreadBuilderProps>
         data-theme={style.theme}
       >
         {items.length === 0 && (
-          <p style={{ color: "white", margin: 0, minWidth: 300 }}>Add your first tweet to start a thread.</p>
+          <p className="m-0 min-w-[300px] text-sm text-white/90">Add your first tweet to start a thread.</p>
         )}
         {items.map((item, index) => (
-          <div key={item.key} style={{ marginBottom: index < items.length - 1 ? 12 : 0 }}>
+          <div key={item.key} className={index < items.length - 1 ? "mb-3" : ""}>
             {item.status === "loading" && (
               <div
                 aria-busy="true"
-                style={{ width: 500, maxWidth: "100%", height: 120, background: "#eee", borderRadius: 16 }}
+                className="h-[120px] w-[500px] max-w-full animate-pulse rounded-2xl bg-white/70"
               />
             )}
             {item.status === "error" && (
               <div
                 role="alert"
-                style={{
-                  width: 500,
-                  maxWidth: "100%",
-                  border: "1px solid crimson",
-                  borderRadius: 16,
-                  padding: 16,
-                  background: "white",
-                }}
+                className="w-[500px] max-w-full rounded-2xl border border-danger bg-white p-4"
               >
-                <p>Couldn&apos;t load this tweet: {item.error}</p>
-                <button type="button" onClick={() => retryItem(item.key)}>
-                  Retry
-                </button>{" "}
-                <button type="button" onClick={() => removeItem(item.key)}>
-                  Remove
-                </button>
+                <p className="mb-2 text-sm text-foreground">Couldn&apos;t load this tweet: {item.error}</p>
+                <div className="flex gap-2">
+                  <button
+                    type="button"
+                    onClick={() => retryItem(item.key)}
+                    className="rounded-md border border-border px-2.5 py-1 text-xs font-medium hover:bg-zinc-50"
+                  >
+                    Retry
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => removeItem(item.key)}
+                    className="rounded-md border border-border px-2.5 py-1 text-xs font-medium hover:bg-zinc-50"
+                  >
+                    Remove
+                  </button>
+                </div>
               </div>
             )}
             {item.status === "loaded" && item.tweet && (
@@ -173,8 +176,14 @@ export const ThreadBuilder = forwardRef<ThreadBuilderHandle, ThreadBuilderProps>
                 {/* data-export-hide: stripped from the CLONE before capture
                     (export-image.ts) — these controls must never appear in
                     the exported PNG, only in the live editing UI. */}
-                <div data-export-hide="true" style={{ display: "flex", gap: 8, marginTop: 4 }}>
-                  <button type="button" onClick={() => moveItem(item.key, -1)} disabled={index === 0} aria-label="Move up">
+                <div data-export-hide="true" className="mt-1 flex gap-1.5">
+                  <button
+                    type="button"
+                    onClick={() => moveItem(item.key, -1)}
+                    disabled={index === 0}
+                    aria-label="Move up"
+                    className="rounded-md border border-white/40 bg-white/10 px-2 py-1 text-xs text-white disabled:opacity-40"
+                  >
                     ↑
                   </button>
                   <button
@@ -182,10 +191,15 @@ export const ThreadBuilder = forwardRef<ThreadBuilderHandle, ThreadBuilderProps>
                     onClick={() => moveItem(item.key, 1)}
                     disabled={index === items.length - 1}
                     aria-label="Move down"
+                    className="rounded-md border border-white/40 bg-white/10 px-2 py-1 text-xs text-white disabled:opacity-40"
                   >
                     ↓
                   </button>
-                  <button type="button" onClick={() => removeItem(item.key)}>
+                  <button
+                    type="button"
+                    onClick={() => removeItem(item.key)}
+                    className="rounded-md border border-white/40 bg-white/10 px-2 py-1 text-xs text-white"
+                  >
                     Remove
                   </button>
                 </div>

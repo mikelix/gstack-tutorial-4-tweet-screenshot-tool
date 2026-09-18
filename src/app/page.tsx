@@ -129,6 +129,16 @@ export default function Home() {
     void loadTweet(input, "push");
   }
 
+  // Design Review 4.1, Phase 6: a safe, neutral, non-controversial example
+  // (the first tweet ever posted) so a new visitor can see real output
+  // without hunting for a tweet of their own first. Reuses loadTweet
+  // exactly as a manual paste would -- no separate code path.
+  function handleTryExample() {
+    const exampleUrl = "https://twitter.com/jack/status/20";
+    setInput(exampleUrl);
+    void loadTweet(exampleUrl, "push");
+  }
+
   function handleStyleChange(next: StyleState) {
     // Continuous input (the padding slider) replaces the current history
     // entry so dragging doesn't flood back/forward with one entry per
@@ -154,48 +164,132 @@ export default function Home() {
       ? `${window.location.origin}${encodeStyleState(status.tweet.id_str, style)}`
       : "";
 
+  const isEmpty = status.phase === "idle" || status.phase === "error";
+
   return (
-    <main style={{ padding: 24, maxWidth: 900, margin: "0 auto", fontFamily: "system-ui" }}>
-      <h1 style={{ fontSize: 22 }}>Tweet Screenshot</h1>
-      <p style={{ color: "#666" }}>Paste a tweet link, customize it, export a PNG.</p>
+    <main className="flex-1">
+      {isEmpty && (
+        <div className="mx-auto max-w-[720px] px-4 pb-10 pt-24 text-center sm:px-6">
+          <h1 className="mb-3.5 text-[38px] font-semibold leading-[1.15] tracking-tight text-foreground">
+            Turn any tweet into a beautiful image.
+          </h1>
+          <p className="mb-10 text-base leading-relaxed text-text-secondary">
+            Paste an X link, customize the look, and export a high-resolution PNG.
+          </p>
+          <div className="mx-auto flex max-w-[560px] gap-2">
+            <input
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && handleSubmit()}
+              placeholder="https://x.com/user/status/..."
+              className="flex-1 rounded-[10px] border border-border bg-surface px-4 py-3.5 text-sm outline-none focus:border-accent focus:ring-2 focus:ring-accent/40"
+              aria-label="Tweet URL"
+            />
+            <button
+              type="button"
+              onClick={handleSubmit}
+              className="rounded-[10px] bg-accent px-5.5 py-3.5 text-sm font-semibold text-white hover:bg-accent-hover disabled:opacity-60"
+            >
+              Create
+            </button>
+          </div>
+          <div className="mt-3.5">
+            <button
+              type="button"
+              onClick={handleTryExample}
+              className="text-sm font-medium text-accent hover:underline"
+            >
+              Try an example instead →
+            </button>
+          </div>
 
-      <div style={{ display: "flex", gap: 8, margin: "16px 0" }}>
-        <input
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          onKeyDown={(e) => e.key === "Enter" && handleSubmit()}
-          placeholder="https://x.com/user/status/..."
-          style={{ flex: 1, padding: 8 }}
-          aria-label="Tweet URL"
-        />
-        <button type="button" onClick={handleSubmit} disabled={status.phase === "loading"}>
-          Load
-        </button>
-      </div>
-
-      {status.phase === "error" && (
-        <p role="alert" style={{ color: "crimson" }}>
-          {status.message}
-        </p>
+          {status.phase === "error" && (
+            <p role="alert" className="mt-6 flex items-center justify-center gap-1.5 text-sm text-danger">
+              <span aria-hidden="true">⚠</span>
+              {status.message}
+            </p>
+          )}
+        </div>
       )}
 
-      {status.phase === "loading" && <TweetSkeleton />}
+      {status.phase === "loading" && (
+        <div className="mx-auto max-w-[1180px] px-4 pt-6 sm:px-6">
+          <TweetSkeleton />
+        </div>
+      )}
 
       {status.phase === "loaded" && (
-        <div style={{ display: "flex", gap: 24, flexWrap: "wrap" }}>
-          <div>
-            <TweetCanvas ref={canvasRef} tweet={status.tweet} style={style} />
-            <div style={{ marginTop: 16 }}>
-              <ExportControls
-                canvasRef={canvasRef}
-                scale={style.scale}
-                shareUrl={shareUrl}
-                disabled={false}
+        <>
+          <div className="mx-auto flex max-w-[1180px] items-center gap-2 px-4 pt-4 sm:px-6">
+            <div className="flex flex-1 items-center gap-2 rounded-lg border border-border bg-surface px-3.5 py-2.5 focus-within:border-accent focus-within:ring-2 focus-within:ring-accent/40">
+              <svg
+                aria-hidden="true"
+                viewBox="0 0 20 20"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.6"
+                className="h-4 w-4 shrink-0 text-text-secondary"
+              >
+                <path d="M8.5 11.5a3 3 0 0 0 4.24 0l2.5-2.5a3 3 0 1 0-4.24-4.24l-1 1" strokeLinecap="round" strokeLinejoin="round" />
+                <path d="M11.5 8.5a3 3 0 0 0-4.24 0l-2.5 2.5a3 3 0 1 0 4.24 4.24l1-1" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+              <input
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                onKeyDown={(e) => e.key === "Enter" && handleSubmit()}
+                placeholder="https://x.com/user/status/..."
+                className="flex-1 bg-transparent text-[13px] text-text-secondary outline-none"
+                aria-label="Tweet URL"
               />
             </div>
+            <button
+              type="button"
+              onClick={handleSubmit}
+              className="flex shrink-0 items-center gap-1.5 rounded-lg border border-border bg-surface px-4 py-2.5 text-[13px] font-medium text-foreground hover:border-accent hover:text-accent"
+            >
+              <svg aria-hidden="true" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6" className="h-3.5 w-3.5 shrink-0">
+                <path d="M4 10a6 6 0 0 1 10.24-4.24M16 10a6 6 0 0 1-10.24 4.24" strokeLinecap="round" strokeLinejoin="round" />
+                <path d="M14 3v3h-3M6 17v-3h3" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+              <span className="hidden sm:inline">Load a different tweet</span>
+              <span className="sm:hidden">Change</span>
+            </button>
           </div>
-          <CustomizePanel style={style} onChange={handleStyleChange} />
-        </div>
+
+          <div className="mx-auto grid max-w-[1180px] grid-cols-1 gap-6 px-4 pb-24 pt-6 sm:px-6 sm:pb-6 sm:grid-cols-[1fr_340px]">
+            {/* overflow-x-auto is the safety net for the confirmed mobile
+                overflow bug (docs/DESIGN_REVIEW_4_1_CURRENT_STATE.md):
+                react-tweet's card has an intrinsic min-width wider than a
+                375px viewport, so the card scrolls within its own
+                container instead of blowing out the page. */}
+            <div className="flex w-full flex-col items-center gap-5 overflow-x-auto rounded-2xl border border-border bg-surface p-7">
+              <TweetCanvas ref={canvasRef} tweet={status.tweet} style={style} />
+              <div className="hidden sm:block">
+                <ExportControls
+                  canvasRef={canvasRef}
+                  scale={style.scale}
+                  shareUrl={shareUrl}
+                  disabled={false}
+                />
+              </div>
+            </div>
+            <div className="self-start rounded-2xl border border-border bg-surface p-5">
+              <CustomizePanel style={style} onChange={handleStyleChange} />
+            </div>
+          </div>
+
+          {/* Mobile: the same ExportControls instance, repositioned as a
+              sticky bottom bar so Download PNG stays reachable without
+              scrolling back up (Direction A mobile spec). */}
+          <div className="fixed inset-x-0 bottom-0 border-t border-border bg-surface px-4 py-3 sm:hidden">
+            <ExportControls
+              canvasRef={canvasRef}
+              scale={style.scale}
+              shareUrl={shareUrl}
+              disabled={false}
+            />
+          </div>
+        </>
       )}
     </main>
   );

@@ -92,19 +92,38 @@ export function ExportControls({ canvasRef, scale, shareUrl, disabled }: ExportC
   }
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-      <div style={{ display: "flex", gap: 8 }}>
-        <button type="button" onClick={handleDownload} disabled={disabled || downloadStatus === "busy"}>
+    <div className="flex w-full flex-col items-center gap-2">
+      <div className="flex w-full items-center justify-center gap-4">
+        <button
+          type="button"
+          onClick={handleDownload}
+          disabled={disabled || downloadStatus === "busy"}
+          className="rounded-[9px] bg-accent px-5 py-2.5 text-sm font-semibold text-white hover:bg-accent-hover disabled:opacity-60"
+        >
           {downloadStatus === "busy" ? "Exporting…" : "Download PNG"}
         </button>
-        <button type="button" onClick={handleCopy} disabled={disabled || copyStatus === "busy"}>
+        <button
+          type="button"
+          onClick={handleCopy}
+          disabled={disabled || copyStatus === "busy"}
+          className="rounded-lg border border-border px-3 py-1.5 text-[13px] font-medium text-foreground hover:border-accent hover:bg-accent/5 hover:text-accent disabled:opacity-60"
+        >
           {copyStatus === "busy" ? "Copying…" : "Copy image"}
         </button>
-        <button type="button" onClick={handleCopyLink} disabled={disabled || linkStatus === "busy"}>
+        <button
+          type="button"
+          onClick={handleCopyLink}
+          disabled={disabled || linkStatus === "busy"}
+          className="rounded-lg border border-border px-3 py-1.5 text-[13px] font-medium text-foreground hover:border-accent hover:bg-accent/5 hover:text-accent disabled:opacity-60"
+        >
           {linkStatus === "done" ? "Link copied" : "Copy shareable link"}
         </button>
       </div>
-      {message && <p role="status">{message}</p>}
+      {message && (
+        <p role="status" className="text-xs text-text-secondary">
+          {message}
+        </p>
+      )}
     </div>
   );
 }

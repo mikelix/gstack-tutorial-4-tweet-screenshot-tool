@@ -5,26 +5,17 @@ export function TweetSkeleton() {
     <div
       aria-busy="true"
       aria-label="Loading tweet"
-      style={{
-        width: 500,
-        maxWidth: "100%",
-        border: "1px solid #eee",
-        borderRadius: 16,
-        padding: 16,
-        display: "flex",
-        flexDirection: "column",
-        gap: 12,
-      }}
+      className="mx-auto flex w-[500px] max-w-full animate-pulse flex-col gap-3 rounded-2xl border border-border bg-surface p-4"
     >
-      <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
-        <div style={{ width: 40, height: 40, borderRadius: "50%", background: "#e8e8e8" }} />
-        <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-          <div style={{ width: 120, height: 12, borderRadius: 4, background: "#e8e8e8" }} />
-          <div style={{ width: 80, height: 10, borderRadius: 4, background: "#eee" }} />
+      <div className="flex items-center gap-2.5">
+        <div className="h-10 w-10 rounded-full bg-zinc-200" />
+        <div className="flex flex-col gap-1.5">
+          <div className="h-3 w-30 rounded bg-zinc-200" />
+          <div className="h-2.5 w-20 rounded bg-zinc-100" />
         </div>
       </div>
-      <div style={{ width: "100%", height: 12, borderRadius: 4, background: "#eee" }} />
-      <div style={{ width: "70%", height: 12, borderRadius: 4, background: "#eee" }} />
+      <div className="h-3 w-full rounded bg-zinc-100" />
+      <div className="h-3 w-[70%] rounded bg-zinc-100" />
     </div>
   );
 }

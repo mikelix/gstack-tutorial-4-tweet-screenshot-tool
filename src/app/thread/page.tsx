@@ -78,53 +78,74 @@ export default function ThreadPage() {
       : "";
 
   return (
-    <main style={{ padding: 24, maxWidth: 900, margin: "0 auto", fontFamily: "system-ui" }}>
-      <h1 style={{ fontSize: 22 }}>Thread Screenshot</h1>
-      <p style={{ color: "#666" }}>
-        Add each tweet in the thread, in order. Manual — no auto-discovery (see README).
-      </p>
-
-      <div style={{ display: "flex", gap: 8, margin: "16px 0" }}>
-        <input
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          onKeyDown={(e) => e.key === "Enter" && handleAdd()}
-          placeholder="https://x.com/user/status/..."
-          style={{ flex: 1, padding: 8 }}
-          aria-label="Tweet URL"
-        />
-        <button type="button" onClick={handleAdd}>
-          Add tweet
-        </button>
+    <main className="flex-1 pb-24 sm:pb-0">
+      <div className="mx-auto max-w-[720px] px-4 pb-6 pt-16 text-center sm:px-6">
+        <h1 className="mb-2 text-[28px] font-semibold leading-tight tracking-tight text-foreground">
+          Turn a thread into one shareable image.
+        </h1>
+        <p className="mb-8 text-sm leading-relaxed text-text-secondary">
+          Add each tweet in the thread, in order — manual, no auto-discovery
+          (see README).
+        </p>
+        <div className="mx-auto flex max-w-[560px] gap-2">
+          <input
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && handleAdd()}
+            placeholder="https://x.com/user/status/..."
+            className="flex-1 rounded-[10px] border border-border bg-surface px-4 py-3 text-sm outline-none focus:border-accent focus:ring-2 focus:ring-accent/40"
+            aria-label="Tweet URL"
+          />
+          <button
+            type="button"
+            onClick={handleAdd}
+            className="rounded-[10px] bg-accent px-5 py-3 text-sm font-semibold text-white hover:bg-accent-hover"
+          >
+            Add tweet
+          </button>
+        </div>
+        {capMessage && (
+          <p role="alert" className="mt-4 flex items-center justify-center gap-1.5 text-sm text-danger">
+            <span aria-hidden="true">⚠</span>
+            {capMessage}
+          </p>
+        )}
       </div>
 
-      {capMessage && (
-        <p role="alert" style={{ color: "crimson" }}>
-          {capMessage}
-        </p>
-      )}
-
-      <div style={{ display: "flex", gap: 24, flexWrap: "wrap" }}>
-        <div>
+      <div className="mx-auto grid max-w-[1180px] grid-cols-1 gap-6 px-4 pb-6 sm:px-6 sm:grid-cols-[1fr_340px]">
+        <div className="flex w-full flex-col items-center gap-5 overflow-x-auto rounded-2xl border border-border bg-surface p-7">
           <ThreadBuilder
             ref={builderRef}
             style={style}
             initialIds={initialIds}
             onStateChange={handleThreadStateChange}
           />
-          <div style={{ marginTop: 16 }}>
+          <div className="hidden sm:block">
             <ExportControls
               canvasRef={canvasRef}
               scale={style.scale}
               shareUrl={shareUrl}
               disabled={!threadState.canExport}
             />
-            {!threadState.canExport && threadState.ids.length > 0 && (
-              <p style={{ color: "#666" }}>Export is blocked until every tweet in the thread loads.</p>
-            )}
           </div>
+          {!threadState.canExport && threadState.ids.length > 0 && (
+            <p className="text-xs text-text-secondary">
+              Export is blocked until every tweet in the thread loads.
+            </p>
+          )}
         </div>
-        <CustomizePanel style={style} onChange={handleStyleChange} />
+        <div className="self-start rounded-2xl border border-border bg-surface p-5">
+          <CustomizePanel style={style} onChange={handleStyleChange} />
+        </div>
+      </div>
+
+      <div className="fixed inset-x-0 bottom-0 border-t border-border bg-surface px-4 py-3 sm:hidden">
+        <ExportControls
+          canvasRef={canvasRef}
+          scale={style.scale}
+          shareUrl={shareUrl}
+          disabled={!threadState.canExport}
+        />
       </div>
     </main>
   );

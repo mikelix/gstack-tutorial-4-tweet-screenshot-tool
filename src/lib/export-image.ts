@@ -98,6 +98,48 @@ function replaceVideoWithPosterImage(cloned: Node) {
   }
 }
 
+/**
+ * Runs a capture function against a sanitized OFF-SCREEN CLONE of `node`,
+ * never the live node itself.
+ *
+ * Root cause (measured, not guessed): modern-screenshot's own internal
+ * video handling (`cloneVideo`) sets `cloned.currentTime = video.currentTime`
+ * and awaits a `seeked` event before it will proceed. Our `<video>` elements
+ * are never played, so `currentTime` is already `0` — setting it to `0`
+ * again does not fire `seeked` in Chromium, so that await never resolves.
+ * This happens inside modern-screenshot's OWN clone step, before our
+ * `onCloneNode` hook ever runs, so `onCloneNode` can't prevent it — it was
+ * already too late. Measured: single video tweet, thread with 2 video
+ * tweets, and a thread with quoted-tweet video all hang identically, with
+ * zero asset-proxy fetches ever firing, at any scale, even with a 60s
+ * timeout (see docs/design-review-4.1 investigation notes).
+ *
+ * The fix is to never let modern-screenshot see a real `<video>` element:
+ * clone `node` ourselves, swap every `<video>` for its poster `<img>` synchronously
+ * on that clone (existing `replaceVideoWithPosterImage`, now applied before
+ * capture instead of via `onCloneNode`), and only then hand the clone to
+ * domToPng/domToBlob. The clone is attached off-screen (not `display:none`)
+ * so layout/computed styles resolve the same as the live node.
+ */
+async function withSanitizedClone<T>(
+  node: HTMLElement,
+  run: (clone: HTMLElement) => Promise<T>,
+): Promise<T> {
+  const clone = node.cloneNode(true) as HTMLElement;
+  clone.style.position = "fixed";
+  clone.style.top = "0";
+  clone.style.left = "-99999px";
+  clone.style.pointerEvents = "none";
+  clone.setAttribute("aria-hidden", "true");
+  document.body.appendChild(clone);
+  try {
+    replaceVideoWithPosterImage(clone);
+    return await run(clone);
+  } finally {
+    clone.remove();
+  }
+}
+
 export interface CaptureOptions {
   scale?: number;
   timeoutMs?: number;
@@ -166,11 +208,12 @@ export async function captureNodeToPng(
 ): Promise<CaptureResult> {
   const scale = options.scale ?? 1;
   const dataUrl = await withCaptureGate(node, options, () =>
-    domToPng(node, {
-      scale,
-      fetchFn: proxyAwareFetch,
-      onCloneNode: replaceVideoWithPosterImage,
-    }),
+    withSanitizedClone(node, (clone) =>
+      domToPng(clone, {
+        scale,
+        fetchFn: proxyAwareFetch,
+      }),
+    ),
   );
   return {
     dataUrl,
@@ -194,11 +237,12 @@ export async function captureNodeToBlob(
 ): Promise<Blob> {
   const scale = options.scale ?? 1;
   const blob = await withCaptureGate(node, options, () =>
-    domToBlob(node, {
-      scale,
-      fetchFn: proxyAwareFetch,
-      onCloneNode: replaceVideoWithPosterImage,
-    }),
+    withSanitizedClone(node, (clone) =>
+      domToBlob(clone, {
+        scale,
+        fetchFn: proxyAwareFetch,
+      }),
+    ),
   );
   if (!blob) throw new Error("Capture produced no image data");
   return blob;

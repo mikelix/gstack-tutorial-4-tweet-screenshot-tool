@@ -1,26 +1,37 @@
 @import "tailwindcss";
 
+/*
+ * Design Review 4.1 — Direction A "Quiet Creator Tool" tokens.
+ * See docs/DESIGN_REVIEW_4_1_DIRECTIONS.md for the full system (this app
+ * only needs the light-palette values; B/C's dark palettes were concept
+ * exploration only and are not implemented here).
+ */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #fafafa;
+  --foreground: #18181b;
+  --color-surface: #ffffff;
+  --color-border: #e5e5e3;
+  --color-text-secondary: #71717a;
+  --color-accent: #1d4ed8;
+  --color-accent-hover: #1e40af;
+  --color-danger: #dc2626;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-surface: var(--color-surface);
+  --color-border: var(--color-border);
+  --color-text-secondary: var(--color-text-secondary);
+  --color-accent: var(--color-accent);
+  --color-accent-hover: var(--color-accent-hover);
+  --color-danger: var(--color-danger);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans), Arial, Helvetica, sans-serif;
 }
