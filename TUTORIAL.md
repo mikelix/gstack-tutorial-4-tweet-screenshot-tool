@@ -10,7 +10,11 @@ consequential step.
 
 **Time:** 3-5 hours to read this tutorial closely; the project behind it
 (a full app, five review passes, and a production deploy) took one long
-session. Scaling is in wall-clock per stage, not in new steps.
+session. Scaling is in wall-clock per stage, not in new steps. Parts 0-18
+are that original session. Parts 20-23 — **Tutorial No. 4.1** — are a
+second, later session on the same codebase, covering a product design
+revision and a real production bug found and fixed after the Part 15
+deploy; add roughly 1-1.5 hours to read that extension closely.
 
 **Prerequisites:** gstack already working (tutorials #1-#3 cover this); a
 second AI chat you can open in a separate window — any provider; Node.js
@@ -850,6 +854,388 @@ Ten lessons this project actually earned, not ten generic best practices:
 
 ---
 
+## Tutorial No. 4.1 — Post-launch iteration
+
+Parts 0-18 above are the original, complete Tutorial No. 4: premise
+through first production deploy. They are left intact — this is not a
+rewrite. The four parts below are a second, later case study on the same
+codebase: a product design revision and a real production bug, both
+discovered and resolved *after* the app in Part 15 was already live. If
+Tutorial No. 4 teaches how AI-native development gets you to a working
+first release, Tutorial No. 4.1 teaches what happens next — because
+"shipped" is not "finished," and the discipline that got you to
+production is exactly the discipline you need to keep it correct once
+real humans start using it.
+
+## Part 20 — Product Design 4.1: From Engineering Prototype to Startup Product
+
+**Governing lesson:** *product design is not decoration; it reduces user
+uncertainty.*
+
+Part 15's production app was functionally verified and genuinely
+working. It was also, on a fresh human look weeks later, judged to read
+as an engineering prototype rather than a product someone would trust
+with their own content. Those are two different questions, and this
+project had only ever answered the first one:
+
+| | Engineering QA asks | Product design QA asks |
+|---|---|---|
+| The question | "Does it work?" | "Does the user immediately understand and trust it?" |
+| Evidence | Passing tests, correct output | A five-second first impression, held to the same evidentiary standard as Part 11's Evidence Ladder |
+
+A current-state review of the live app found real, specific gaps, not
+vague dissatisfaction: no persistent header or navigation, so Thread mode
+(a real, working feature) was undiscoverable from the single-tweet page;
+a plain, unstyled `<input>` and default-browser form controls; the tweet
+preview sitting in an unbordered flex row rather than reading as the
+page's visual hero; three export buttons of identical visual weight, so
+"which one finishes the job" had no clear answer; and a confirmed
+horizontal-overflow bug at 375px that clipped real content off the right
+edge of the screen. None of these were logic bugs — the app was correct
+and the export byte-identical to what shipped in Part 15. They were
+trust signals a first-time visitor reads in seconds, before ever clicking
+anything.
+
+**The five-second test**, borrowed directly here so you can run it
+yourself on your own project's landing state: look at the empty-state
+screen for no more than five seconds, then look away, and answer from
+memory — *what does this product do? Where would you click to start?
+What output would you expect? Would you notice a second mode (Thread)
+exists? If you had output loaded, would you know which button actually
+finishes the job?* Write your own hypothesis for each answer *before*
+checking it against the real UI — the point is not to grade the design,
+it's to notice which of your assumptions about "obviously discoverable"
+don't survive contact with a first look.
+
+**Three design directions were drafted as standalone HTML concept
+mockups** (not live code — throwaway comparison artifacts, deliberately
+cheap to produce and discard) before any implementation began. A human
+selected **Direction A — "Quiet Creator Tool"**: a persistent header
+establishing product identity and cross-linking Single Tweet/Thread
+modes, a real headline stating the outcome ("Turn any tweet into a
+beautiful image") instead of just the product's name, a two-column
+preview + inspector layout for the loaded state, and one filled primary
+export action against two visually lighter secondary ones.
+
+**Implementation happened on an isolated branch**, never touching `main`
+until explicitly merged — the same human-authorization-gate discipline
+from Part 14, applied to a design change instead of a first deploy. The
+build and lint gates from Part 6 ran clean on the branch before any
+human looked at it visually. The redesign was also, deliberately, proven
+*not* to be a rewrite in disguise: export architecture, the API routes,
+and the exact DOM node `captureNodeToPng` actually rasterizes were
+diffed byte-for-byte against pre-redesign `main` and confirmed unchanged
+— a design review earns no license to quietly change what a correctness
+review already signed off on.
+
+**Human review verdict: "B — approve with minor changes."** Not a flat
+approve, not a rejection — six specific, named items came back: a real
+header/content padding mismatch at 375px (not a personal-taste note, a
+measurable bug in the redesign itself), a redesigned loaded-state
+URL/action row, an inspector card that was stretching to fill unused grid
+height instead of hugging its own content, and a border/pill treatment
+for the two secondary export buttons so they read as clickable. All six
+were presentation-layer only, all six were re-verified against the same
+export-architecture and byte-identity checks as the first pass, and the
+polish commit disclosed something else worth keeping in the record
+rather than quietly fixing: while starting a second local server on an
+alternate port for verification, a process-cleanup command briefly
+targeted and stopped the *wrong* process — the human's own active `npm
+run dev` session, not the intended verification server. It was caught
+immediately and the dev server was restarted; the mistake is recorded
+here because a tutorial that hides its own author's mistakes teaches a
+falsely smooth process.
+
+A second human visual pass on the polished branch, then the same
+merge-into-`main` gate from Part 14 — human authorization required, no
+exception — closed this Part.
+
+**Checkpoint 20**
+- [ ] You can name three specific trust-signal gaps this review found that
+      no unit test could ever catch
+- [ ] You can explain why "the export is byte-identical before and after"
+      is a *design-review* claim as much as an engineering one
+- [ ] You can state, in one sentence, why the wrong-PID mistake belongs in
+      this tutorial rather than being quietly edited out
+
+*Source: `docs/DESIGN_REVIEW_4_1_CURRENT_STATE.md`,
+`docs/DESIGN_REVIEW_4_1_DIRECTIONS.md`,
+`docs/DESIGN_REVIEW_4_1_HUMAN_REVIEW.md`,
+`docs/DESIGN_REVIEW_4_1_RELEASE.md`.*
+
+---
+
+## Part 21 — Fidelity Testing: The X Broadcast Boundary
+
+**Governing lesson:** *before fixing a missing output, find the first
+layer where the information disappears.*
+
+A human reviewer, comparing the live app against the real tweet at
+`x.com/elonmusk/status/2100296847344783441`, found a real, reproducible
+gap: the quoted post inside that tweet embeds a live X Broadcast, and
+X.com renders it as a rich, animated card — title, live speaker avatars,
+a duration ticker, a view count. The app rendered the same quoted tweet
+as plain text plus a bare `x.com/i/broadcasts/…` link. No card, no
+thumbnail, nothing rendered wrong so much as nothing rendered at all.
+
+**The instinct to avoid: guessing which layer dropped the data and
+patching that guess.** The disciplined alternative is the same
+first-failing-layer method Part 12 already taught for a different bug —
+walk the pipeline in order, and stop at the first layer that actually
+fails, not the first layer you suspect:
+
+```
+Original X.com page (rich Broadcast card, rendered by X's own
+  authenticated, proprietary client-side JS)
+  |
+free syndication payload  (cdn.syndication.twimg.com/tweet-result --
+  the ONLY data source this app is allowed to use; no paid X API)
+  |
+react-tweet  (the open-source embed library this app renders through)
+  |
+this app's DOM
+  |
+PNG capture
+```
+
+**Layer 2 is where the trail goes cold.** The raw syndication payload for
+this exact tweet was fetched and inspected directly: the quoted tweet's
+JSON contains only a plain URL entity pointing at the broadcast link —
+no `card`, no `mediaDetails`, no poster, no title, no duration, no
+participant data, anywhere in the response. X's other free endpoint,
+oEmbed, was checked too, and confirms *why*: it returns nothing but a
+bare `<blockquote>` and a `<script src="widgets.js">` tag — the real
+card is assembled entirely client-side, by X's own proprietary script,
+against X's authenticated internal APIs. There is no static, fetchable
+representation of a Broadcast card anywhere in the free data surface.
+
+**Layer 3 was checked too, not assumed clean.** `react-tweet`'s own
+TypeScript types and rendering components were read directly: there is no
+`card` or `broadcast` field anywhere in its type definitions, and a
+full-text search of its distributed source for either word returns zero
+matches. The library was never built with a concept of link/broadcast
+preview cards — this is not a regression, it is a capability that never
+existed.
+
+**A contrast test is what turns "the data is missing" into "the data is
+missing *specifically here*, not everywhere.**" An ordinary tweet with
+native video — where the syndication payload *does* include
+`mediaDetails`/`video` — was captured and exported through the exact same
+app, and rendered correctly: poster frame, play badge, "Watch on X"
+label, all present. That single control case is what separates the
+correct conclusion from the tempting overreach:
+
+> This tutorial does not say "video does not work." It says: X Broadcast
+> (`x.com/i/broadcasts/…`) rich-card fidelity is bounded by what the free
+> syndication path exposes — ordinary native photo and video media,
+> confirmed by the control case, is unaffected.
+
+**Classification: known upstream limitation, not a bug.** modern-screenshot
+(the export library) was never reached in this investigation and is not
+implicated — the information was already absent three layers upstream of
+where capture even begins. No fix exists inside the free-data
+constraint this project deliberately operates under (Part 0 rules out a
+paid X API from the start). A generic, honest fallback was scoped as an
+optional idea, explicitly **not implemented**: a static label reading
+"X Broadcast — preview unavailable · Open on X" — truthful about what
+isn't there, never a fabricated title, poster, duration, or viewer count
+standing in for data the app was never given.
+
+**Checkpoint 21**
+- [ ] You can draw the five-layer pipeline above from memory and name
+      which layer actually failed
+- [ ] You can explain what the native-video control test proved that the
+      Broadcast test alone could not
+- [ ] You can state why "show a fabricated poster image" would have been
+      a worse fix than no fix at all
+
+*Source: `TODOS.md` ("Known upstream limitation"),
+`docs/DESIGN_REVIEW_4_1_RELEASE.md` ("Media fidelity boundary").*
+
+---
+
+## Part 22 — Thread Export Failure: When the First Hypothesis Is Wrong
+
+**Governing lesson:** *good debugging is not proving your first
+hypothesis; it is killing the wrong hypothesis quickly.*
+
+A human, testing a real, media-heavy two-tweet thread in production,
+hit "Export timed out — try a lower scale" — the app's own honest
+failure message, not a crash. A printed PDF of the thread page (captured
+before attempting export) proved the DOM itself had rendered correctly:
+both tweets visible, both their embedded videos showing a normal poster
+frame. The failure was somewhere in the export stage specifically, not
+in loading or rendering.
+
+**Hypothesis 1, the obvious one: this thread is just too big for the
+requested export scale.** Cheap, specific, and directly testable — export
+the exact same fixture at 1×, 2×, and 3× and see whether the failure
+scales with pixel area the way a real size problem would.
+
+| Scale | Result | Time to failure |
+|---|---|---|
+| 1× | FAIL | ~8.2s |
+| 2× | FAIL | ~8.2s |
+| 3× | FAIL | ~8.2s |
+
+**All three failed at the same time, to the second.** A genuine
+pixel-budget problem would fail *later* at 1× than at 3× — more scale
+means more raw canvas area, more work, a longer failure curve. Identical
+failure timing at every scale is not weak evidence against Hypothesis 1;
+it actively disproves it. The 8.2-second mark was also suspicious on its
+own: it matches the app's fixed 8-second capture timeout almost exactly,
+which raises a different question — is 8 seconds really the constraint,
+or is something else *always* taking at least that long, at any size?
+
+**The disciplined next move was not "just raise the timeout."** The
+capture timeout was temporarily bumped to 60 seconds, purely as a
+diagnostic — never as a proposed fix — and the same export was attempted
+again, with the app's own resource-timing instrumentation watching
+exactly when each individual media request actually fired.
+
+**Result: still failed, at 60 seconds, having made zero image-proxy
+requests the entire time.** Not "slow" — stuck. Something was hanging
+*before* the export pipeline ever reached the step of fetching a single
+image. That single data point reframed the whole investigation: pixel
+count was never the variable that mattered.
+
+**Hypothesis 2, narrower and testable in under a minute: is this actually
+about threads at all, or about video?** Both tweets in the failing
+fixture happened to contain native video. A *single*, non-threaded tweet
+with a native video, exported alone, hung identically — same unbounded
+stall, same zero proxy requests. The bug had nothing to do with threads;
+threads just happened to be where a human first noticed it, because this
+particular fixture had two videos instead of the usual one.
+
+**Reading the actual library source, not guessing at it, found the real
+mechanism.** modern-screenshot's own internal video-cloning step —
+completely separate from and running *before* this app's own
+poster-frame-swap logic ever gets a chance to run — does this:
+
+```
+clonedVideo.currentTime = video.currentTime
+await new Promise(resolve =>
+  clonedVideo.addEventListener("seeked", resolve, { once: true })
+)
+```
+
+This app's videos are never played — they sit at their default poster
+frame, so `video.currentTime` is always exactly `0`. Reassigning `0` to
+a clone whose `currentTime` is *already* `0` performs no actual seek in
+Chromium, so the `seeked` event this code is waiting for never fires.
+The `await` hangs forever — not for a long time, forever — and it hangs
+inside the library's own clone step, before this app's `onCloneNode`
+video-poster-swap hook is ever invoked. That hook had existed in the
+codebase since before Part 15 and had never actually been exercised
+against a real playing video; `TODOS.md` had honestly flagged it as
+"implemented, unverified" rather than claiming it worked. It could not
+have worked, structurally, no matter how it was written, because it ran
+on the wrong side of the hang.
+
+**The fix removes the hazard instead of working around it.** Before
+handing anything to modern-screenshot, the app now clones the export node
+itself, swaps every `<video>` element for its poster `<img>` on that
+clone — attached off-screen so layout and computed styles resolve
+exactly as on the live node — and only then passes the sanitized clone to
+the capture library. modern-screenshot never sees a real `<video>`
+element, so its internal seek-wait path never runs. No timeout was
+raised. No pixel cap or scale restriction was added. There was nothing
+to raise a timeout *for* — the process was never going to finish, at any
+duration, until the actual hazard was removed.
+
+**Verification, the same discipline as Part 11's Evidence Ladder,
+climbed a second time:** a plain-text tweet's export was hashed
+byte-for-byte identical before and after the fix
+(`sha256 eb9b38e6392fad1ea450e77fff3d7423b58ee5b9605450b450f2f66c5490785b`,
+405691 bytes) — proof the fix touched nothing about how ordinary content
+is captured. The originally failing fixture then exported successfully
+at 1×, 2×, and 3× in roughly 0.6-2 seconds each, both against a local
+production build and, separately, in the actual production deployment.
+
+> Byte-identical regression tests prove unchanged behavior; they do not
+> prove the behavior was complete or correct in the first place. The
+> plain-tweet hash never moved, through this entire investigation — and
+> the video-export path was still completely broken the whole time. A
+> passing regression suite and a working product are not the same claim.
+
+**Checkpoint 22**
+- [ ] You can state what "identical failure time at every scale" actually
+      disproves, and why that's stronger than it first sounds
+- [ ] You can explain why bumping the timeout to 60 seconds was a
+      diagnostic step, not a candidate fix, and how the result told you that
+- [ ] You can describe, from memory, why `currentTime = 0` assigned to an
+      already-`0` value never fires `seeked` in Chromium
+- [ ] You can explain why "the poster-swap code already existed" did not
+      mean the video bug was already handled
+
+*Source: `src/lib/export-image.ts`, `TODOS.md` ("Fixed: video tweet
+export hung indefinitely"), `docs/DESIGN_REVIEW_4_1_RELEASE.md` ("Thread/
+video export fix").*
+
+---
+
+## Part 23 — Human Evidence as the Final Layer
+
+**Governing lesson:** *human testing catches failures that automated
+checks cannot even formulate.*
+
+Part 11 built an Evidence Ladder for a single artifact. Tutorial No. 4.1
+extends it across an entire iteration cycle, because both bugs in this
+Part's story were *found* by a human, not by automation — Part 20's
+design gaps and Part 22's export hang were both invisible to every
+passing test this project had. Extend the ladder one more rung past
+where Part 11 left it:
+
+```
+Automated test
+  |
+Browser QA (Part 9)
+  |
+Exported artifact exists
+  |
+Human visual inspection
+  |
+Cross-application use          <-- new this cycle
+  |
+Production confirmation
+```
+
+**"Copy succeeded" is weaker evidence than "the copied image was pasted
+successfully into another real application and visually confirmed."**
+The distinction matters concretely here: this project's clipboard-copy
+code path had sat in `TODOS.md` for the entire original tutorial as
+"implemented, not empirically verified" (Part 16) — the `navigator
+.clipboard.write()` call resolving without throwing was the only signal
+anyone had ever checked. After the 4.1 fixes shipped to production, a
+human ran the real test that signal alone can't stand in for: click Copy
+image in Thread mode on the live production app, open Windows 11 Paint,
+paste, and look at what actually landed on the canvas. It matched.
+That is the rung "the promise resolved" cannot climb to by itself.
+
+**The full chain of human evidence this cycle, in order:** a local
+redesign review before any human ever saw the deployed result; the
+original X.com page held directly against the app's rendering to find
+the Broadcast gap in Part 21; a printed PDF of the thread page, captured
+*before* attempting the export that would go on to hang, standing as
+proof the DOM existed and had rendered correctly independent of whatever
+export did next; a production Download PNG test on the fixed thread; a
+production Copy image test; and the Paint paste-and-look step above,
+closing the loop a programmatic clipboard check never could.
+
+**Checkpoint 23**
+- [ ] You can explain, in your own words, why "the clipboard API resolved
+      without an error" and "a human pasted the image and looked at it"
+      are different claims
+- [ ] You can name one bug from this Part 20-23 cycle a human found that
+      no automated check in this entire project's history would have
+      caught
+- [ ] You can redraw the extended Evidence Ladder above from memory
+
+*Source: `docs/DESIGN_REVIEW_4_1_RELEASE.md` ("Thread/video export
+fix" — human manual verification).*
+
+---
+
 ## Troubleshooting
 
 | Symptom | Likely cause | Minimal response |
@@ -863,6 +1249,9 @@ Ten lessons this project actually earned, not ten generic best practices:
 | A source document looks stale or contradicts the code | Documentation written before a later fix | Trust the code and the review files over prose; file it as a doc fix |
 | EN/ZH tutorials seem to drift | No mechanical check was run | Run the parity script before trusting either language is current — see `docs/TUTORIAL_4_DOCUMENT_MANIFEST.md` |
 | A deck or document "built successfully" but looks wrong | A clean build is not proof of correct rendering (Part 11's own lesson, applied to this tutorial's own tooling) | Render and inspect the actual output before calling it done |
+| A working feature suddenly "hangs" with no error, ever | The library you're calling may be waiting on an event that never fires (Part 22's `seeked` case) | Check whether zero forward progress is being made at all (e.g. zero network requests) before assuming it just needs more time |
+| A fix seems to scale-cap or pixel-cap a failure away | You may be treating the symptom, not the cause | Confirm the failure timing is actually correlated with size first (Part 22) — identical failure time at every size means size isn't the variable |
+| Content visible on the real source site doesn't render in your app | Could be any of several layers, not necessarily "the library is broken" | Walk the pipeline in order and find the first layer that actually fails (Part 12, extended in Part 21) before patching anything |
 
 ---
 
@@ -881,6 +1270,14 @@ Ten lessons this project actually earned, not ten generic best practices:
   not level 7.
 - Stop when the release goal is met; don't chase completeness for its own
   sake.
+- "Ships" is not "finished" — a product design review after launch is not
+  a failure of the first review, it's the next stage (Part 20).
+- When a hypothesis about *why* something fails is cheap to test, test it
+  before acting on it — identical failure timing across three different
+  scales was the signal that killed the wrong hypothesis in one step
+  (Part 22).
+- A promise resolving without an error is not the same claim as a human
+  confirming the result by hand in a second, real application (Part 23).
 
 ---
 
@@ -931,6 +1328,11 @@ aside repl 'console.log("ASIDE_READY " + pwd)'
 | Minimal QC | 最低限度质检 |
 | Ship gate | 上线关卡 |
 | Meta-agent / External AI Mentor | 元智能体 / 外部 AI 导师 |
+| Product design review | 产品设计复核 |
+| Five-second test | 五秒测试 |
+| First-failing-layer method | 首个失效层定位法 |
+| Known upstream limitation | 已知上游限制 |
+| Cross-application human test | 跨应用人工测试 |
 
 ## Appendix C — Definition of Done
 
@@ -959,3 +1361,15 @@ aside repl 'console.log("ASIDE_READY " + pwd)'
 - [x] No private identifiers (username, hostname, account/team name, device
       codes) anywhere in this tutorial or its companion documents
 - [x] Known limitations documented in Part 16, not hidden
+- [x] Tutorial No. 4.1 (Parts 20-23) covers the post-launch design
+      revision and the real production bug found and fixed after Part 15,
+      in both EN and ZH, with the same governing-lesson/checkpoint format
+- [x] Public code (`src/`) matches the verified, deployed Tutorial 4.1
+      behavior — confirmed by a byte-for-byte diff against the private
+      working repo's final commit
+- [x] The X Broadcast limitation (Part 21) is stated accurately as a known
+      upstream limitation, not a claimed fix
+- [x] The thread/video export fix (Part 22) is documented as fixed, not
+      left as a stale "known bug"
+- [x] `docs/TUTORIAL_4_RELEASE_REPORT.md` and companion release docs
+      updated to reflect the Tutorial 4.1 state

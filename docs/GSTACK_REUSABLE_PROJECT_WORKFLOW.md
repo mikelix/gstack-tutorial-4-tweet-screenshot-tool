@@ -32,6 +32,18 @@ about when a stage can be folded into another, not the exact role count.
 | 14 | Production smoke test | Confirm the live thing actually works, not just the local build | A real pass through the core flow(s) against the live URL | Zero fatal errors in the tested flow | Human or AI browser confirms against the live URL |
 | 15 | Freeze + retrospective | Record what shipped, what's deferred, and what was learned | A known-limitations list and a lessons list | Every known gap is named, none silently dropped | Human reads and accepts the final disclosure |
 
+**Stage 15 is not the end of the project's life — it's where you re-enter
+this table on the next real iteration.** Tutorial No. 4.1
+(`TUTORIAL.md` Parts 20-23) proved four more stages, run *after* a real
+freeze, on a live product with real users:
+
+| # | Stage | Purpose | Expected output | Exit criterion | Typical human gate |
+|---|---|---|---|---|---|
+| 16 | Product design review | Judge whether a working product also reads as trustworthy, not just functional | A current-state review, a five-second-test hypothesis, and 2-3 concrete directions | A human has picked a direction, or explicitly held the current state | Human selects the direction; approves, requests changes, or rejects |
+| 17 | Real-source fidelity test | Compare your app's rendering directly against the original, authoritative source it's derived from | A specific, reproducible discrepancy, or its absence | The comparison used a real fixture, not a hypothetical one | None required to run the test; a human gate applies only if a fix is proposed |
+| 18 | First-failing-layer debugging | Find the exact layer where an output goes missing or a process hangs, before writing any fix | A layer-by-layer trace with a pass/fail per layer, and a disproven or confirmed hypothesis at each step | The failing layer is identified with evidence, not assumed | Human reviews the trace before a fix is written, not just the fix itself |
+| 19 | Cross-application human test | Confirm a claim by actually using its output in a second, independent, real application | A human's direct report of the cross-application result (e.g. paste, open, print) | The artifact was used somewhere this project's own code doesn't control | This IS the human gate — a promise resolving without error does not satisfy it |
+
 ## Notes on reuse
 
 - **Stages can merge when the underlying work already covers them.** Stage
@@ -49,3 +61,15 @@ about when a stage can be folded into another, not the exact role count.
 - **The exit criteria are deliberately about evidence, not about time
   spent.** A stage is done when its exit criterion is met, not when a fixed
   amount of effort has gone into it.
+- **Stages 16-19 are a loop, not a one-time coda.** A real product goes
+  through stage 15 more than once. Each time it does, stages 16-19 are the
+  reusable shape of "what happened after," proven by Tutorial No. 4.1: a
+  design review found trust gaps no test suite could name (stage 16); a
+  fidelity test against the real X.com page found a genuine upstream data
+  gap and correctly stopped at "known limitation" rather than chasing an
+  impossible fix (stage 17); a debugging session that started with a wrong,
+  cheap-to-test hypothesis reached the real root cause by killing that
+  hypothesis fast, not by defending it (stage 18); and a clipboard-copy
+  claim that had sat unverified since the original tutorial only became
+  trustworthy once a human actually pasted the result into Windows Paint
+  and looked at it (stage 19).

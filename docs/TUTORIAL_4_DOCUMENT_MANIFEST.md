@@ -28,8 +28,12 @@ established for the slide deck.
 | Part 16 — Known limitations | Rate limiting never built; thread style bug; unverified media scenarios; unverified Safari clipboard | `TODOS.md`, `reviews/05-ship.md` | — |
 | Part 17 — Reusable workflow | 16-stage table with purpose/output/exit criterion/human gate | `docs/GSTACK_REUSABLE_PROJECT_WORKFLOW.md` (derived from `PLAN.md`, all `reviews/`) | — |
 | Part 18 — Final lessons | Ten lessons synthesized from Parts 1-17 | Synthesis of all `reviews/` | — |
-| Deck (companion artifact) | 20-slide bilingual version of the same narrative | `_build/deck_content.py` | `dist/gstack-tutorial-4_{EN,ZH}.pptx`, `docs/TUTORIAL_4_DECK_MANIFEST.md` |
-| Word memo (companion artifact) | Shorter executive-memo version, same source facts | `_build/doc_content.py` | `dist/gstack-tutorial-4_{EN,ZH}.docx` |
+| Part 20 — Product design 4.1 | Current-state review; five-second test; three concept directions; Direction A selected; human "approve with minor changes" verdict; six-item polish pass; wrong-PID process mistake disclosed | `docs/DESIGN_REVIEW_4_1_CURRENT_STATE.md`, `docs/DESIGN_REVIEW_4_1_DIRECTIONS.md`, `docs/DESIGN_REVIEW_4_1_HUMAN_REVIEW.md`, `docs/DESIGN_REVIEW_4_1_RELEASE.md` | `docs/design-review-4.1/concepts/*`, `docs/design-review-4.1/evidence/*-after.png` |
+| Part 21 — X Broadcast fidelity | Five-layer pipeline trace; syndication payload has no card data; oEmbed confirms client-side-only rendering; `react-tweet` has no card concept; native-video contrast test | `TODOS.md` ("Known upstream limitation"), `docs/DESIGN_REVIEW_4_1_RELEASE.md` ("Media fidelity boundary") | `docs/design-review-4.1/evidence/media-fidelity-*` |
+| Part 22 — Thread export bug | 1x/2x/3x identical-failure-time table; 60s diagnostic timeout still hung; zero proxy calls; `modern-screenshot` `cloneVideo`/`seeked` root cause; off-screen-clone fix; byte-identical regression hash | `src/lib/export-image.ts`, `TODOS.md` ("Fixed: video tweet export hung indefinitely"), `docs/DESIGN_REVIEW_4_1_RELEASE.md` ("Thread/video export fix") | Exported PNG evidence, printed thread PDF |
+| Part 23 — Human evidence ladder | Extended Evidence Ladder (adds cross-application use); production Download PNG / Copy image / Paint-paste human tests | `docs/DESIGN_REVIEW_4_1_RELEASE.md` ("Thread/video export fix" — human manual verification) | — (human-reported, not independently AI-verifiable, by design — same category as Part 10) |
+| Deck (companion artifact) | Bilingual slide version of the same narrative, including a 4.1 section | `_build/deck_content.py` | `dist/gstack-tutorial-4_{EN,ZH}.pptx`, `docs/TUTORIAL_4_DECK_MANIFEST.md` |
+| Word memo (companion artifact) | Shorter executive-memo version, same source facts, including a 4.1 section | `_build/doc_content.py` | `dist/gstack-tutorial-4_{EN,ZH}.docx` |
 
 ## What is explicitly NOT a source for any of the above
 

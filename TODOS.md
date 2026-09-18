@@ -3,6 +3,82 @@
 Deferred, non-blocking work for the Tweet Screenshot Tool. None of these block
 Tutorial No. 4 — the core paste → customize → export flow (single tweet and
 thread) works and was verified with real evidence (see plan/implementation log).
+Two items below were found and resolved after the original Tutorial No. 4
+release, during Tutorial No. 4.1 (`TUTORIAL.md` Parts 20-23) — kept here with
+the same status the tutorial itself claims: one fixed, one a documented
+upstream limitation.
+
+## Fixed: video tweet export hung indefinitely ("Export timed out")
+
+- **Any tweet containing a native `<video>` element — single tweet or
+  thread, any export scale — hung forever on export**, eventually showing
+  "Export timed out — try a lower scale" after the fixed 8-second capture
+  timeout. Root cause (measured, not guessed — full trace in Tutorial No.
+  4.1 Part 22): `modern-screenshot`'s own internal video-cloning step
+  (`cloneVideo`) sets `clonedVideo.currentTime = video.currentTime` and
+  awaits a `seeked` event before continuing. This app's video elements are
+  never played, so `currentTime` is always `0` — reassigning `0` to an
+  element already at `0` does not fire `seeked` in Chromium, so that
+  `await` never resolves. This happens inside `modern-screenshot`'s own
+  clone step, before this app's `onCloneNode` hook (the poster-frame swap,
+  `replaceVideoWithPosterImage`) ever runs — so that hook could never have
+  prevented the hang; it ran too late in the pipeline. Confirmed with
+  resource-timing instrumentation: zero `/api/image-proxy` fetches ever
+  fired, at 1x/2x/3x, even with the timeout temporarily raised to 60s — the
+  hang is unconditional, not a "just needs more time" situation, and
+  scale-independent (rules out a pixel/canvas-size cause). A single,
+  non-threaded video tweet hung identically to the reported thread case,
+  so this was never actually thread-specific.
+
+  **Fix** (`src/lib/export-image.ts`): swap every `<video>` for its poster
+  `<img>` on this app's own off-screen clone of the export node, before
+  handing anything to `domToPng`/`domToBlob` — so `modern-screenshot` never
+  sees a real `<video>` element and its internal `cloneVideo`/seek-wait
+  path never runs. The clone is attached (`position:fixed; left:-99999px`,
+  not `display:none`) so layout/computed styles resolve exactly as on the
+  live node. `onCloneNode: replaceVideoWithPosterImage` was removed from
+  the `domToPng`/`domToBlob` calls (now redundant/ineffective) in favor of
+  this pre-capture sanitization step.
+
+  **Verified after the fix:** a plain-text tweet's export is byte-for-byte
+  identical before and after this fix (`sha256
+  eb9b38e6392fad1ea450e77fff3d7423b58ee5b9605450b450f2f66c5490785b`,
+  405691 bytes) — confirming zero regression for non-video content. A
+  previously-hanging two-video-tweet thread now exports successfully at
+  1x/2x/3x in roughly 0.6-2 seconds each, both locally and in production.
+  The original 8-second capture timeout was left unchanged — it was never
+  the real constraint once the hang itself was removed.
+
+## Known upstream limitation (investigated, not a bug)
+
+- **X Broadcast (`x.com/i/broadcasts/...`) rich preview cards don't render.**
+  When a tweet quotes a post that embeds a live X Broadcast, X.com shows an
+  animated rich card (title, live speaker avatars, duration, viewer count).
+  This app shows the quoted text plus the plain broadcast link instead.
+  Investigated end-to-end (full trace in Tutorial No. 4.1 Part 21): the free
+  syndication payload (`cdn.syndication.twimg.com/tweet-result`, what
+  `fetchTweet()` calls) never includes broadcast card metadata for this
+  content type — no title, thumbnail, duration, or participant data, only a
+  plain URL entity. X's other free endpoint, oEmbed, confirms this: it
+  returns a bare `<blockquote>` plus X's own `widgets.js`, meaning the real
+  card is rendered by proprietary client-side JS pulling from X's
+  authenticated internal APIs, not from any static, fetchable data.
+  `react-tweet` itself has no card/broadcast concept anywhere in its source
+  (checked types and components) — it was never built to support this. This
+  app's own code (`/api/tweet/[id]`, `TweetCanvas.tsx`) passes the payload
+  through unmodified; there is nothing for it to drop, because the data was
+  never present. Reproduced with
+  `https://x.com/elonmusk/status/2100296847344783441`. A contrast test on an
+  ordinary tweet with native video (upstream `mediaDetails`/`video` present)
+  rendered correctly, confirming the gap is specific to Broadcast/card
+  previews, not video support generally. **No fix is available within the
+  free-data path** — there's no static poster/thumbnail/title anywhere to
+  build a fallback from, and reproducing the card would require scraping
+  X's proprietary JS or paid/authenticated API access, both out of scope.
+  **Priority:** documented limitation, non-blocking. **Possible V2 (not
+  implemented):** for `x.com/i/broadcasts/...` URLs, show a generic,
+  non-fabricated fallback like "X Broadcast — preview unavailable · Open on
+  X" — must not invent title/poster/duration/viewer data.
 
 ## Known non-blocking bug
 
@@ -45,7 +121,6 @@ thread) works and was verified with real evidence (see plan/implementation log).
 
 ## Deferred verification (not converted to PASS without evidence — see plan file)
 
-- [ ] Real video tweet export (poster-frame swap implemented, unverified against a real `<video>`)
 - [ ] Emoji rendering in export
 - [ ] Multi-image tweet export
 - [ ] Manual clipboard verification in Aside / real Safari (automation-inconclusive this session)

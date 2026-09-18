@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>CONCEPT ONLY — Direction B — Empty (with instant demo)</title>
+<style>
+  :root{--bg:#0b0b10;--surface:#141420;--border:#26263a;--text:#f4f4f6;--text2:#9a9ab0;--accent:#7c5cff;--accent-hov:#6a48f0}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Inter",Segoe UI,sans-serif;background:var(--bg);color:var(--text)}
+  .badge{position:fixed;top:8px;left:8px;background:#fff;color:#111;font:600 11px/1 monospace;padding:6px 10px;border-radius:4px;z-index:99}
+  header{border-bottom:1px solid var(--border)}
+  .shell{max-width:1180px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;padding:14px 24px}
+  .brand{display:flex;align-items:center;gap:10px;font-weight:600;font-size:15px}
+  .mark{width:22px;height:22px;border-radius:6px;background:var(--accent)}
+  nav.seg{display:flex;background:#1c1c2a;border-radius:8px;padding:3px;gap:2px}
+  nav.seg a{padding:6px 14px;border-radius:6px;font-size:13px;font-weight:500;color:var(--text2);text-decoration:none}
+  nav.seg a.active{background:#2a2a3d;color:#fff}
+  .gh{font-size:13px;color:var(--text2);text-decoration:none}
+  main{max-width:1000px;margin:0 auto;padding:64px 24px 40px;text-align:center}
+  h1{font-size:34px;line-height:1.2;letter-spacing:-.02em;margin:0 0 10px;font-weight:650}
+  p.lead{font-size:15px;color:var(--text2);margin:0 0 36px}
+  .demo{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:32px;display:inline-block;margin-bottom:28px}
+  .demolabel{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);margin-bottom:14px}
+  .tweet-bg{width:420px;aspect-ratio:4/3;border-radius:14px;background:linear-gradient(135deg,#7c5cff,#22d3ee);display:flex;align-items:center;justify-content:center;padding:28px}
+  .tweet-card{background:#fff;color:#111;border-radius:12px;padding:18px 20px;max-width:320px;width:100%;box-shadow:0 20px 40px rgba(0,0,0,.35)}
+  .tw-head{display:flex;align-items:center;gap:9px;margin-bottom:9px}
+  .avatar{width:36px;height:36px;border-radius:50%;background:#d4d4d8}
+  .tw-name{font-weight:700;font-size:13px}
+  .tw-handle{font-size:12px;color:#71717a}
+  .tw-body{font-size:15px;line-height:1.4;margin-bottom:9px}
+  .tw-meta{font-size:11px;color:#71717a}
+  .inputrow{display:flex;gap:8px;max-width:520px;margin:0 auto}
+  input{flex:1;padding:13px 16px;border:1px solid var(--border);border-radius:10px;font-size:14px;background:var(--surface);color:var(--text)}
+  input::placeholder{color:var(--text2)}
+  input:focus{outline:2px solid var(--accent);outline-offset:1px}
+  button.primary{padding:13px 22px;border:none;border-radius:10px;background:var(--accent);color:#fff;font-weight:600;font-size:14px;cursor:pointer}
+  button.primary:hover{background:var(--accent-hov)}
+  .or{margin:16px 0 6px;font-size:12px;color:var(--text2)}
+  button.tryexample{padding:11px 20px;border:1px solid var(--border);border-radius:9px;background:transparent;color:var(--text);font-size:13px;font-weight:500;cursor:pointer}
+</style>
+</head>
+<body>
+<div class="badge">CONCEPT ONLY — NOT IMPLEMENTED — Direction B</div>
+<header>
+  <div class="shell">
+    <div class="brand"><span class="mark"></span>Tweet Screenshot</div>
+    <nav class="seg"><a class="active" href="#">Single Tweet</a><a href="#">Thread</a></nav>
+    <a class="gh" href="#">GitHub</a>
+  </div>
+</header>
+<main>
+  <h1>This is what your tweet could look like.</h1>
+  <p class="lead">Paste any X link and get a shareable image like this in seconds.</p>
+  <div class="demo">
+    <div class="demolabel">Live example — try it below</div>
+    <div class="tweet-bg">
+      <div class="tweet-card">
+        <div class="tw-head"><div class="avatar"></div><div><div class="tw-name">jack</div><div class="tw-handle">@jack</div></div></div>
+        <div class="tw-body">just setting up my twttr</div>
+        <div class="tw-meta">4:50 AM · Mar 22, 2006</div>
+      </div>
+    </div>
+  </div>
+  <div class="inputrow">
+    <input placeholder="Paste your own tweet link…" />
+    <button class="primary">Create</button>
+  </div>
+  <div class="or">or</div>
+  <button class="tryexample">Try this example tweet →</button>
+</main>
+</body>
+</html>

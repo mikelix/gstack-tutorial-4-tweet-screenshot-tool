@@ -10,7 +10,10 @@ Turns a tweet URL into a styled, downloadable image — for blogging, decks, or
 sharing a tweet somewhere that isn't X itself. Built as the demo project for
 **Gstack Tutorial No. 4** — a worked example of running a second, independent
 AI as a review and prompt-drafting layer above gstack's specialist AI roles,
-end to end from planning through production deployment.
+end to end from planning through production deployment — and later extended by
+**Tutorial No. 4.1**, a second case study on the same codebase covering a
+post-launch product design revision and a real production bug found and fixed
+after the first release.
 
 ## Features
 
@@ -44,10 +47,13 @@ Then open:
 - Single tweet: `http://localhost:3000`
 - Thread builder: `http://localhost:3000/thread`
 
-## Tutorial No. 4
+## Tutorial No. 4 / 4.1
 
-This repo is the demo project for gstack Tutorial No. 4 — read the full
-walkthrough, in either language:
+This repo is the demo project for gstack Tutorial No. 4 (Parts 0-18: from
+planning to first production deploy) and its extension, Tutorial No. 4.1
+(Parts 20-23: a post-launch product design revision and a real production
+bug, found and fixed after the first release) — read the full walkthrough,
+in either language:
 
 - **English:** [`TUTORIAL.md`](TUTORIAL.md)
 - **中文:** [`TUTORIAL.zh.md`](TUTORIAL.zh.md)
@@ -72,9 +78,17 @@ Shorter companion artifacts, generated from the same source facts (see
 - A shared thread link's tweets and order always restore correctly; the saved
   style (background/padding/theme) sometimes doesn't on first load. See
   `TODOS.md` for the known-issue writeup.
+- Native photo/video media exposed by X's free syndication data renders and
+  exports normally (verified — see Tutorial No. 4.1, Part 22). X Broadcast
+  (`x.com/i/broadcasts/...`) rich preview cards are not exposed by that free
+  data path, so a tweet quoting one may show as text + link rather than
+  X.com's full animated broadcast card. This is a known upstream data
+  limitation, not a bug in this project or in `react-tweet` — see Tutorial
+  No. 4.1, Part 21, and `TODOS.md` for the full investigation.
 - See `TODOS.md` for the full list of deferred verification and polish items
-  (video tweets, emoji, multi-image threads, and a few others aren't yet
-  empirically verified, though the code paths for them exist).
+  (video tweet *export* was fixed and verified in Tutorial No. 4.1; emoji
+  rendering and multi-image thread export aren't yet empirically verified,
+  though the code paths for them exist).
 
 ## Architecture note
 

@@ -1,9 +1,17 @@
 # Tutorial No. 4 — Final Release Report
 
 ```
-Release status: PUBLIC_RELEASE_READY
+Release status: PUBLIC_RELEASE_READY  (Tutorial No. 4, original release)
 Date:           2026-09-17
 ```
+
+**Superseded by Tutorial No. 4.1.** Everything below this line describes
+the original Tutorial No. 4 release and is left intact as the historical
+record. A second release, Tutorial No. 4.1 — a post-launch product design
+revision and a real production bug found and fixed after this release —
+followed on 2026-09-18. See `docs/TUTORIAL_4_1_REVISION_REPORT.md` for
+that release's own full record; `TUTORIAL.md`/`TUTORIAL.zh.md` Parts
+20-23 are the reader-facing narrative.
 
 ## Application
 
@@ -62,7 +70,8 @@ Full method and per-asset findings: `docs/TUTORIAL_4_PRIVACY_REVIEW.md`,
 
 - No rate limiting on the public API routes — planned and reviewed twice, never implemented.
 - A shared thread link's tweet order always restores correctly; the saved style (background/padding/theme) sometimes doesn't on first load.
-- Video-tweet export, emoji rendering, and multi-image thread export are implemented but not empirically verified.
+- Emoji rendering and multi-image thread export are implemented but not empirically verified. (Video-tweet export *was* in this category at original release; it was found broken, root-caused, fixed, and verified in Tutorial No. 4.1 — see `docs/TUTORIAL_4_1_REVISION_REPORT.md`.)
+- X Broadcast (`x.com/i/broadcasts/...`) rich preview cards don't render — a known upstream data limitation, investigated and documented in Tutorial No. 4.1, Part 21.
 - Real Safari/iOS clipboard behavior is implemented but not empirically verified on real Safari.
 - No automated test suite — a stated process gap, not a hidden one.
 

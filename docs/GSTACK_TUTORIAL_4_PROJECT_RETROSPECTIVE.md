@@ -5,6 +5,12 @@ continuous session on 2026-09-17, from the original request through production
 deployment. It has two jobs: become the raw material for Gstack Tutorial No. 4, and
 become a checklist the next project can reuse.
 
+**Scope note:** this retrospective covers only the 2026-09-17 build session
+(Tutorial No. 4, Parts 0-18). A second session on 2026-09-18 produced Tutorial
+No. 4.1 (`TUTORIAL.md` Parts 20-23) — its own raw-material record is
+`docs/TUTORIAL_4_1_REVISION_REPORT.md`, kept separate rather than merged in
+here so each retrospective stays grounded in its own session's artifacts.
+
 Everything in this document is grounded in the project's own artifacts:
 `tweet-screenshot-tool-plan.md` (the CEO review + engineering review + implementation
 log, written live as the work happened), `TODOS.md`, `README.md`, the source code,

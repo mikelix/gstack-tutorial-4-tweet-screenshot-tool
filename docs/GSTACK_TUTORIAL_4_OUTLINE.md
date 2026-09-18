@@ -27,6 +27,10 @@ has a named source (cross-check against
 | 16 — Known limitations | Sort gaps into implemented-but-unverified / known-bug / deferred / pre-scale-required | `TODOS.md`, `reviews/05-ship.md` | Limitations table | Known limitations are acceptable when they are explicit, bounded, and compatible with the release goal |
 | 17 — Reusable operating system | Have a 16-stage checklist ready for the next project | `docs/GSTACK_REUSABLE_PROJECT_WORKFLOW.md` | 16-stage table | The reusable asset is not the code — it is the development system that produced the code |
 | 18 — Final lessons | Carry ten concrete, earned lessons forward | Synthesis of all prior Parts | — | *(ten lessons, not one — see Part 18 directly)* |
+| 20 — Product design 4.1 | See a shipped, working product judged unfinished on trust signals, and revised through the same human-gated discipline | `docs/DESIGN_REVIEW_4_1_*.md` | Engineering-QA vs. product-QA table | Product design is not decoration; it reduces user uncertainty |
+| 21 — X Broadcast fidelity | Trace a missing output through five real layers to find where the data actually disappears | `TODOS.md`, `docs/DESIGN_REVIEW_4_1_RELEASE.md` | Five-layer pipeline diagram | Before fixing a missing output, find the first layer where the information disappears |
+| 22 — Thread export failure | Watch a plausible first hypothesis get killed by one cheap experiment, then find the real root cause in library source | `src/lib/export-image.ts`, `TODOS.md` | Scale/result/time table, hang mechanism code excerpt | Good debugging is not proving your first hypothesis; it is killing the wrong hypothesis quickly |
+| 23 — Human evidence ladder | Extend the Evidence Ladder past "the promise resolved" to real cross-application confirmation | `docs/DESIGN_REVIEW_4_1_RELEASE.md` | Extended Evidence Ladder diagram | Human testing catches failures that automated checks cannot even formulate |
 
 ## Supporting sections (not chapter-numbered)
 

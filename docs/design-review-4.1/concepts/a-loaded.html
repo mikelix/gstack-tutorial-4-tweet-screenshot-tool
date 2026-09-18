@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>CONCEPT ONLY — Direction A — Loaded</title>
+<style>
+  :root{
+    --bg:#fafafa; --surface:#ffffff; --border:#e5e5e3; --text:#18181b;
+    --text2:#71717a; --accent:#1d4ed8; --accent-hov:#1e40af;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Inter",Segoe UI,sans-serif;background:var(--bg);color:var(--text)}
+  .badge{position:fixed;top:8px;left:8px;background:#111;color:#fff;font:600 11px/1 monospace;padding:6px 10px;border-radius:4px;z-index:99}
+  header{border-bottom:1px solid var(--border);background:var(--surface)}
+  .shell{max-width:1180px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;padding:14px 24px}
+  .brand{display:flex;align-items:center;gap:10px;font-weight:600;font-size:15px}
+  .mark{width:22px;height:22px;border-radius:6px;background:var(--accent)}
+  nav.seg{display:flex;background:#f4f4f5;border-radius:8px;padding:3px;gap:2px}
+  nav.seg a{padding:6px 14px;border-radius:6px;font-size:13px;font-weight:500;color:var(--text2);text-decoration:none}
+  nav.seg a.active{background:#fff;color:var(--text);box-shadow:0 1px 2px rgba(0,0,0,.06)}
+  .gh{font-size:13px;color:var(--text2);text-decoration:none}
+  .urlbar{max-width:1180px;margin:0 auto;padding:16px 24px 0;display:flex;gap:8px}
+  .urlbar input{flex:1;padding:10px 14px;border:1px solid var(--border);border-radius:8px;font-size:13px;color:var(--text2)}
+  .urlbar button{padding:10px 16px;border:1px solid var(--border);border-radius:8px;background:#fff;font-size:13px;font-weight:500;cursor:pointer}
+  .layout{max-width:1180px;margin:0 auto;padding:24px;display:grid;grid-template-columns:1fr 340px;gap:24px;align-items:start}
+  .previewcard{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:28px;display:flex;align-items:center;justify-content:center}
+  .tweet-bg{width:100%;aspect-ratio:4/3;border-radius:16px;background:linear-gradient(135deg,#3b82f6,#8b5cf6);display:flex;align-items:center;justify-content:center;padding:32px}
+  .tweet-card{background:#fff;border-radius:14px;padding:20px 22px;max-width:340px;width:100%;box-shadow:0 20px 40px rgba(0,0,0,.18)}
+  .tw-head{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+  .avatar{width:40px;height:40px;border-radius:50%;background:#d4d4d8}
+  .tw-name{font-weight:700;font-size:14px}
+  .tw-handle{font-size:13px;color:var(--text2)}
+  .tw-body{font-size:16px;line-height:1.4;margin-bottom:10px}
+  .tw-meta{font-size:12px;color:var(--text2)}
+  .exportbar{display:flex;align-items:center;justify-content:center;gap:14px;margin-top:20px}
+  .exportbar button.primary{padding:11px 20px;border:none;border-radius:9px;background:var(--accent);color:#fff;font-weight:600;font-size:14px;cursor:pointer}
+  .exportbar .secondary{font-size:13px;color:var(--text2);text-decoration:none}
+  .inspector{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:20px;display:flex;flex-direction:column;gap:22px}
+  .field label{display:block;font-size:12px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.04em;margin-bottom:10px}
+  .swatches{display:flex;gap:8px}
+  .swatch{width:28px;height:28px;border-radius:8px;border:2px solid transparent;cursor:pointer}
+  .swatch.sel{border-color:var(--accent)}
+  input[type=range]{width:100%}
+  .btnrow{display:flex;gap:6px}
+  .btnrow button{flex:1;padding:8px;border:1px solid var(--border);border-radius:7px;background:#fff;font-size:12px;font-weight:500;cursor:pointer}
+  .btnrow button.sel{border-color:var(--accent);color:var(--accent);background:#eff6ff}
+  @media (max-width:480px){
+    body{padding-bottom:76px}
+    .shell{padding:12px 16px}
+    .urlbar{padding:12px 16px 0}
+    .layout{grid-template-columns:1fr;padding:16px;gap:16px}
+    .previewcard{padding:16px}
+    .exportbar{position:fixed;left:0;right:0;bottom:0;background:#fff;border-top:1px solid var(--border);padding:12px 16px;margin:0;justify-content:stretch;gap:10px}
+    .exportbar button.primary{flex:1}
+  }
+</style>
+</head>
+<body>
+<div class="badge">CONCEPT ONLY — NOT IMPLEMENTED — Direction A</div>
+<header>
+  <div class="shell">
+    <div class="brand"><span class="mark"></span>Tweet Screenshot</div>
+    <nav class="seg"><a class="active" href="#">Single Tweet</a><a href="#">Thread</a></nav>
+    <a class="gh" href="#">GitHub</a>
+  </div>
+</header>
+<div class="urlbar"><input value="https://x.com/jack/status/20" /><button>Change</button></div>
+<div class="layout">
+  <div class="previewcard">
+    <div class="tweet-bg">
+      <div class="tweet-card">
+        <div class="tw-head"><div class="avatar"></div><div><div class="tw-name">jack</div><div class="tw-handle">@jack</div></div></div>
+        <div class="tw-body">just setting up my twttr</div>
+        <div class="tw-meta">4:50 AM · Mar 22, 2006</div>
+      </div>
+    </div>
+  </div>
+  <div class="inspector">
+    <div class="field"><label>Background</label>
+      <div class="swatches">
+        <div class="swatch sel" style="background:linear-gradient(135deg,#3b82f6,#8b5cf6)"></div>
+        <div class="swatch" style="background:linear-gradient(135deg,#f97316,#ef4444)"></div>
+        <div class="swatch" style="background:#0f172a"></div>
+        <div class="swatch" style="background:#22c55e"></div>
+        <div class="swatch" style="background:#fff;border:1px solid #e5e5e3"></div>
+        <div class="swatch" style="background:#000"></div>
+      </div>
+    </div>
+    <div class="field"><label>Padding — 48px</label><input type="range" /></div>
+    <div class="field"><label>Export scale</label>
+      <div class="btnrow"><button>1x</button><button class="sel">2x</button><button>3x</button></div>
+    </div>
+    <div class="field"><label>Theme</label>
+      <div class="btnrow"><button class="sel">Light</button><button>Dark</button></div>
+    </div>
+  </div>
+</div>
+<div class="exportbar">
+  <button class="primary">Download PNG</button>
+  <a class="secondary" href="#">Copy image</a>
+  <a class="secondary" href="#">Copy share link</a>
+</div>
+</body>
+</html>
